@@ -2,49 +2,57 @@
 require_once 'db.php';
 require_once 'authenticate.php';
 
-// Obter todos os professores para associar à turma
-$stmt = $pdo->query("SELECT id, nome FROM professores");
-$professores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Busca todos os pacientes
+$stmt_pacientes = $pdo->query("SELECT id, nome FROM paciente ORDER BY nome;");
+$pacientes = $stmt_pacientes->fetchAll(PDO::FETCH_ASSOC);
+
+// Busca todos os médicos
+$stmt_medicos = $pdo->query("SELECT id, nome FROM medico ORDER BY nome;");
+$medicos = $stmt_medicos->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $disciplina = $_POST['disciplina'];
-    $turno = $_POST['turno'];
-    $professor_id = $_POST['professor_id'];
+    $paciente = $_POST['paciente'];
+    $medico = $_POST['medico'];
+    $data_hora = $_POST['data_hora'];
+    $observacao = $_POST['observacao'];
 
-    // Insere a nova turma no banco de dados
-    $stmt = $pdo->prepare("INSERT INTO turmas (disciplina, turno, professor_id) VALUES (?, ?, ?)");
-    $stmt->execute([$disciplina, $turno, $professor_id]);
+    // Insere a nova consulta no banco de dados
+    $stmt = $pdo->prepare("INSERT INTO medico_paciente (medico_id, paciente_id, data_hora, observacao) VALUES (?, ?, ?, ?);");
+    $stmt->execute([$medico, $paciente, $data_hora, $observacao]);
 
-    header('Location: index-turma.php');
+    header('Location: index-consulta.php');
+    exit();
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Turma</title>
+    <title>Adicionar Consulta</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
     <header>
-        <h1>Adicionar Turma</h1>
+        <h1>Adicionar consulta</h1>
         <nav>
             <ul>
-                <li><a href="index.php">Home</a></li>
+                <li><a href="../index.php">Home</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>Alunos: 
-                        <a href="/php/create-aluno.php">Adicionar</a> | 
-                        <a href="/php/index-aluno.php">Listar</a>
+                    <li>Pacientes:
+                        <a href="/php/create-paciente.php">Adicionar</a> |
+                        <a href="/php/index-paciente.php">Listar</a>
                     </li>
-                    <li>Professores: 
-                        <a href="/php/create-professor.php">Adicionar</a> | 
-                        <a href="/php/index-professor.php">Listar</a>
+                    <li>Médicos:
+                        <a href="/php/create-medico.php">Adicionar</a> |
+                        <a href="/php/index-medico.php">Listar</a>
                     </li>
-                    <li>Turmas: 
-                        <a href="/php/create-turma.php">Adicionar</a> | 
-                        <a href="/php/index-turma.php">Listar</a>
+                    <li>consultas:
+                        <a href="/php/create-consulta.php">Adicionar</a> |
+                        <a href="/php/index-consulta.php">Listar</a>
                     </li>
                     <li><a href="/php/logout.php">Logout (<?= $_SESSION['username'] ?>)</a></li>
                 <?php else: ?>
@@ -56,22 +64,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </header>
     <main>
         <form method="POST">
-            <label for="disciplina">Disciplina:</label>
-            <input type="text" id="disciplina" name="disciplina" required>
 
-            <label for="turno">Turno:</label>
-            <input type="text" id="turno" name="turno" required>
-
-            <label for="professor_id">Professor:</label>
-            <select id="professor_id" name="professor_id" required>
-                <option value="">Selecione o professor</option>
-                <?php foreach ($professores as $professor): ?>
-                    <option value="<?= $professor['id'] ?>"><?= $professor['nome'] ?></option>
+            <label for="paciente">Paciente:</label>
+            <select id="paciente" name="paciente" required>
+                <option value="">--Selecione o paciente--</option>
+                <?php foreach ($pacientes as $marcar): ?>
+                    <option value="<?= $marcar['id'] ?>"><?= $marcar['nome'] ?></option>
                 <?php endforeach; ?>
-            </select>
+            </select> <br>
+
+            <label for="medico">Médico:</label>
+            <select id="medico" name="medico" required>
+                <option value="">--Selecione o médico--</option>
+                <?php foreach ($medicos as $marcar): ?>
+                    <option value="<?= $marcar['id'] ?>"><?= $marcar['nome'] ?></option>
+                <?php endforeach; ?>
+            </select> <br>
+
+            <label for="data">Marcar data e horário:</label>
+            <input type="datetime-local" id="data" name="data_hora" required> <br>
+
+            <label for="observacao">Observalções pré-consulta:</label> <br>
+            <textarea id="observacao" name="observacao" rows="4" placeholder="Máximo de 500 caractéres"></textarea> <br>
 
             <button type="submit">Adicionar</button>
         </form>
     </main>
 </body>
+
 </html>

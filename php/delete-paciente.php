@@ -7,11 +7,11 @@ require_once 'authenticate.php';
 $id = $_GET['id'];
 
 // Prepara a instrução SQL para excluir o aluno pelo ID
-$stmt = $pdo->prepare("DELETE FROM alunos WHERE id = ?");
+$stmt = $pdo->prepare("DELETE FROM paciente WHERE id = ?");
 
 // Executa a instrução SQL com o ID do aluno
 $stmt->execute([$id]);
 
 // Redireciona para a página de listagem de alunos após a exclusão
-header('Location: index-aluno.php');
+header('Location: index-paciente.php');
 ?>

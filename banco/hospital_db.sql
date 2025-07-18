@@ -5,9 +5,6 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- -----------------------------------------------------
--- Schema hospital
--- -----------------------------------------------------
 
 -- -----------------------------------------------------
 -- Schema hospital
@@ -40,8 +37,9 @@ CREATE TABLE IF NOT EXISTS `hospital`.`medico` (
   CONSTRAINT `fk_medico_usuario1`
     FOREIGN KEY (`usuario_id`)
     REFERENCES `hospital`.`usuario` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    -- ON UPDATE NO ACTION
+    )
 ENGINE = InnoDB;
 
 
@@ -59,8 +57,9 @@ CREATE TABLE IF NOT EXISTS `hospital`.`paciente` (
   CONSTRAINT `fk_paciente_usuario1`
     FOREIGN KEY (`usuario_id`)
     REFERENCES `hospital`.`usuario` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    -- ON UPDATE NO ACTION
+    )
 ENGINE = InnoDB;
 
 
@@ -78,13 +77,13 @@ CREATE TABLE IF NOT EXISTS `hospital`.`medico_paciente` (
   CONSTRAINT `fk_medico_has_paciente_medico`
     FOREIGN KEY (`medico_id`)
     REFERENCES `hospital`.`medico` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    -- ON UPDATE NO ACTION
+    ON DELETE CASCADE,
   CONSTRAINT `fk_medico_has_paciente_paciente1`
     FOREIGN KEY (`paciente_id`)
     REFERENCES `hospital`.`paciente` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    -- ON UPDATE NO ACTION
+    ON DELETE CASCADE)
 ENGINE = InnoDB;
 
 

@@ -21,9 +21,9 @@ Médico:  id (chave primária), nome, especialidade
 4.	A interface pode ser feita, inicialmente, com HTML puro. (Após o funcionamento completo, a estilização com CSS é bem-vinda.)
 
 ### Opcional – Integração com Login
-	Você poderá, opcionalmente, incluir um sistema simples de login e controle de acesso. Essa funcionalidade será obrigatória na próxima atividade, então quem quiser se adiantar já pode integrá-la agora.
+Você poderá, opcionalmente, incluir um sistema simples de login e controle de acesso. Essa funcionalidade será obrigatória na próxima atividade, então quem quiser se adiantar já pode integrá-la agora.
 
 ### Entrega
-	Enviar o link do repositório Git com o projeto ou um arquivo .zip contendo todos os arquivos.
-	Incluir obrigatoriamente o script SQL de criação das tabelas no banco de dados.
+Enviar o link do repositório Git com o projeto ou um arquivo .zip contendo todos os arquivos.
+Incluir obrigatoriamente o script SQL de criação das tabelas no banco de dados.
 

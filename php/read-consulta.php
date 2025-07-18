@@ -38,30 +38,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes da Turma</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
     <header>
         <h1>Detalhes da Turma</h1>
         <nav>
             <ul>
-                <li><a href="index.php">Home</a></li>
+                <li><a href="../index.php">Home</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>Alunos: 
-                        <a href="/php/create-aluno.php">Adicionar</a> | 
-                        <a href="/php/index-aluno.php">Listar</a>
+                    <li>Pacientes:
+                        <a href="/php/create-paciente.php">Adicionar</a> |
+                        <a href="/php/index-paciente.php">Listar</a>
                     </li>
-                    <li>Professores: 
-                        <a href="/php/create-professor.php">Adicionar</a> | 
-                        <a href="/php/index-professor.php">Listar</a>
+                    <li>Médicos:
+                        <a href="/php/create-medico.php">Adicionar</a> |
+                        <a href="/php/index-medico.php">Listar</a>
                     </li>
-                    <li>Turmas: 
-                        <a href="/php/create-turma.php">Adicionar</a> | 
-                        <a href="/php/index-turma.php">Listar</a>
+                    <li>Consultas:
+                        <a href="/php/create-consulta.php">Adicionar</a> |
+                        <a href="/php/index-consulta.php">Listar</a>
                     </li>
                     <li><a href="/php/logout.php">Logout (<?= $_SESSION['username'] ?>)</a></li>
                 <?php else: ?>
@@ -77,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p><strong>Disciplina:</strong> <?= $turma['disciplina'] ?></p>
             <p><strong>Turno:</strong> <?= $turma['turno'] ?></p>
             <p><strong>Professor:</strong> <?= $turma['professor_nome'] ?></p>
-            
+
             <h2>Matricular Aluno</h2>
             <form method="POST">
                 <label for="aluno_id">Selecionar Aluno:</label>
@@ -124,4 +126,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
     </main>
 </body>
+
 </html>
