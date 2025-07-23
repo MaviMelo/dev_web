@@ -4,10 +4,10 @@ require_once 'authenticate.php';
 
 $id = $_GET['id'];
 
-// Seleciona o professor específico pelo ID
-$stmt = $pdo->prepare("SELECT professores.*, usuarios.username FROM professores LEFT JOIN usuarios ON professores.usuario_id = usuarios.id WHERE professores.id = ?");
+// Seleciona o médico específico pelo ID
+$stmt = $pdo->prepare("SELECT medico.*, usuario.nome AS nome_usuario FROM medico LEFT JOIN usuario ON medico.usuario_id = usuario.id WHERE medico.id = ?");
 $stmt->execute([$id]);
-$professor = $stmt->fetch(PDO::FETCH_ASSOC);
+$medico = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -16,28 +16,28 @@ $professor = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Professor</title>
+    <title>Detalhes do médico</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
     <header>
-        <h1>Detalhes do Professor</h1>
+        <h1>Detalhes do Médico</h1>
         <nav>
             <ul>
                 <li><a href="../index.php">Home</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>Alunos:
-                        <a href="/php/create-aluno.php">Adicionar</a> |
-                        <a href="/php/index-aluno.php">Listar</a>
+                    <li>Pacientes:
+                        <a href="/php/create-paciente.php">Adicionar</a> |
+                        <a href="/php/index-paciente.php">Listar</a>
                     </li>
-                    <li>Professores:
-                        <a href="/php/create-professor.php">Adicionar</a> |
-                        <a href="/php/index-professor.php">Listar</a>
+                    <li>Médicos:
+                        <a href="/php/create-medico.php">Adicionar</a> |
+                        <a href="/php/index-medico.php">Listar</a>
                     </li>
-                    <li>Turmas:
-                        <a href="/php/create-turma.php">Adicionar</a> |
-                        <a href="/php/index-turma.php">Listar</a>
+                    <li>Consultas:
+                        <a href="/php/create-consulta.php">Adicionar</a> |
+                        <a href="/php/index-consulta.php">Listar</a>
                     </li>
                     <li><a href="/php/logout.php">Logout (<?= $_SESSION['username'] ?>)</a></li>
                 <?php else: ?>
@@ -48,17 +48,18 @@ $professor = $stmt->fetch(PDO::FETCH_ASSOC);
         </nav>
     </header>
     <main>
-        <?php if ($professor): ?>
-            <p><strong>ID:</strong> <?= $professor['id'] ?></p>
-            <p><strong>Nome:</strong> <?= $professor['nome'] ?></p>
-            <p><strong>Área:</strong> <?= $professor['area'] ?></p>
-            <p><strong>Usuário Associado:</strong> <?= $professor['username'] ?></p>
+        <?php if ($medico): ?>
+            <p><strong>ID:</strong> <?= $medico['id'] ?></p>
+            <p><strong>Nome:</strong> <?= $medico['nome'] ?></p>
+            <p><strong>Especialidade:</strong> <?= $medico['especialidade'] ?></p>
+            <p><strong>CRM:</strong> <?= $medico['crm'] ?></p>
+            <p><strong>Usuário Associado:</strong> <?= $medico['nome_usuario'] ?></p>
             <p>
-                <a href="update-professor.php?id=<?= $professor['id'] ?>">Editar</a>
-                <a href="delete-professor.php?id=<?= $professor['id'] ?>">Excluir</a>
+                <a href="update-medico.php?id=<?= $medico['id'] ?>">Editar</a>
+                <a href="delete-medico.php?id=<?= $medico['id'] ?>">Excluir</a>
             </p>
         <?php else: ?>
-            <p>Professor não encontrado.</p>
+            <p>Médico não encontrado.</p>
         <?php endif; ?>
     </main>
 </body>

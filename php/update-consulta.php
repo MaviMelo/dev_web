@@ -11,8 +11,9 @@ $stmt = $pdo->query(
      mp.medico_id,
      mp.paciente_id,
      mp.data_hora,
+     mp.observacao,     
      m.nome AS nome_medico,
-     p.nome AS nome_paciente      
+     p.nome AS nome_paciente 
    FROM
      medico_paciente mp
    INNER JOIN
@@ -23,6 +24,20 @@ $stmt = $pdo->query(
      mp.data_hora DESC"
 );
 $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Se estiver editando uma consulta específica, pegua a referencia da URL, 
+// no caso a chave composta vindo atribuida no parametro '?chave=...'.
+if (isset($_GET['chave'])) {
+    list($medico_id, $paciente_id, $data_hora) = explode('|', $_GET['chave']);
+
+    // Busca os dados da consulta especifica
+    $stmt = $pdo->prepare(
+        "SELECT * FROM medico_paciente
+        WHERE medico_id = ? AND paciente_id = ? AND data_hora = ? ;"
+    );
+    $stmt->execute([$medico_id, $paciente_id, $data_hora]);
+    $consulta_atual = $stmt->fetch();
+};
 
 // prepara o envio dos dados para o baco de dados.
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -41,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     );
     $stmt->execute([$observacao, $medico_id, $paciente_id, $data_hora]);
 
-    header('Location: read-consulta.php?id=' . $id);
+    header('Location: read-consulta.php?chave=' . $_GET['chave']);
 }
 ?>
 
@@ -101,16 +116,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $texto_option = "Médico: " . htmlspecialchars($consulta['nome_medico']) .
                         " | Paciente: " . htmlspecialchars($consulta['nome_paciente']) .
                         " | Data: " . $data_formatada;
+
+                    $selecionado ='';
+                    if (isset($_GET['chave']) && $_GET['chave'] == $valor_option) {
+                        $selecionado = 'selected';
+                    }
+                    
+
                     ?>
 
-                    <option value="<?= $valor_option ?>">
+                        <option value="<?= $valor_option ?>" <?= $selecionado ?>>
                         <?= $texto_option ?>
                     </option>
                 <?php endforeach; ?>
             </select>
 
             <label for="observacao">Observação:</label>
-            <textarea id="observacao" name="observacao" rows="4" placeholder="Máximo de 500 caractéres." required> </textarea>
+            <textarea id="observacao" name="observacao" rows="4" placeholder="Máximo de 500 caractéres." required> <?php echo $consulta_atual['observacao'] ?> </textarea>
 
             <button type="submit">Atualizar</button>
         </form>
@@ -118,5 +140,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </body>
 
 </html>
-
-

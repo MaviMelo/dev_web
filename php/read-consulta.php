@@ -2,38 +2,30 @@
 require_once 'db.php';
 require_once 'authenticate.php';
 
-$id = $_GET['id'];
+isset($_GET['chave']);
+$chave = $_GET['chave'];
+list($medico_id, $paciente_id, $data_hora) = explode('|', $_GET['chave']);
 
-// Seleciona a turma específica pelo ID
-$stmt = $pdo->prepare("SELECT turmas.*, professores.nome AS professor_nome FROM turmas LEFT JOIN professores ON turmas.professor_id = professores.id WHERE turmas.id = ?");
-$stmt->execute([$id]);
-$turma = $stmt->fetch(PDO::FETCH_ASSOC);
+// Seleciona consultas e outras colunas de tabelas relacionadas
+$stmt = $pdo->prepare(
+    "SELECT 
+        mp.*,
+        m.nome AS nome_medico,
+        m.especialidade,
+        p.nome AS nome_paciente,
+        p.data_nascimento
+    FROM 
+        medico_paciente mp 
+    LEFT JOIN 
+        medico m ON mp.medico_id = m.id
+    JOIN
+        paciente p ON mp.paciente_id = p.id
+    WHERE 
+        mp.medico_id = ? AND mp.paciente_id = ? AND mp.data_hora = ?"
+);
+$stmt->execute([$medico_id, $paciente_id, $data_hora]);
+$consulta = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Seleciona os alunos não matriculados na turma
-$stmt = $pdo->prepare("SELECT * FROM alunos WHERE id NOT IN (SELECT aluno_id FROM matriculas WHERE turma_id = ?)");
-$stmt->execute([$id]);
-$alunosDisponiveis = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Seleciona os alunos matriculados na turma
-$stmt = $pdo->prepare("SELECT alunos.* FROM alunos INNER JOIN matriculas ON alunos.id = matriculas.aluno_id WHERE matriculas.turma_id = ?");
-$stmt->execute([$id]);
-$alunosMatriculados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Manipulação da matrícula
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['matricular'])) {
-        $aluno_id = $_POST['aluno_id'];
-        $stmt = $pdo->prepare("INSERT INTO matriculas (aluno_id, turma_id) VALUES (?, ?)");
-        $stmt->execute([$aluno_id, $id]);
-    } elseif (isset($_POST['desmatricular'])) {
-        $aluno_id = $_POST['aluno_id'];
-        $stmt = $pdo->prepare("DELETE FROM matriculas WHERE aluno_id = ? AND turma_id = ?");
-        $stmt->execute([$aluno_id, $id]);
-    }
-
-    header("Location: read-turma.php?id=$id");
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -42,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da Turma</title>
+    <title>Detalhes da Consulta</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
     <header>
-        <h1>Detalhes da Turma</h1>
+        <h1>Detalhes da Consulta</h1>
         <nav>
             <ul>
                 <li><a href="../index.php">Home</a></li>
@@ -74,56 +66,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </nav>
     </header>
     <main>
-        <?php if ($turma): ?>
-            <p><strong>ID:</strong> <?= $turma['id'] ?></p>
-            <p><strong>Disciplina:</strong> <?= $turma['disciplina'] ?></p>
-            <p><strong>Turno:</strong> <?= $turma['turno'] ?></p>
-            <p><strong>Professor:</strong> <?= $turma['professor_nome'] ?></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Consulta</th>
+                    <th>Médico</th>
+                    <th>Especialidade</th>
+                    <th>Paciente</th>
+                    <th>Data de Nascimento</th>
+                    <th>Data da Consulta</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><?= htmlspecialchars($_GET['chave']) ?></td>
+                    <td><?= htmlspecialchars($consulta['nome_medico']) ?></td>
+                    <td><?= htmlspecialchars($consulta['especialidade']) ?></td>
+                    <td><?= htmlspecialchars($consulta['nome_paciente']) ?></td>
+                    <td><?= htmlspecialchars($consulta['data_nascimento']) ?></td>
+                    <td><?= htmlspecialchars($consulta['data_hora']) ?></td>
+                    <td><?= htmlspecialchars($consulta['observacao']) ?></td>
+                </tr>
+            </tbody>
+        </table>
 
-            <h2>Matricular Aluno</h2>
-            <form method="POST">
-                <label for="aluno_id">Selecionar Aluno:</label>
-                <select id="aluno_id" name="aluno_id" required>
-                    <option value="">Selecione o aluno</option>
-                    <?php foreach ($alunosDisponiveis as $aluno): ?>
-                        <option value="<?= $aluno['id'] ?>"><?= $aluno['nome'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit" name="matricular">Matricular</button>
-            </form>
-
-            <h2>Alunos Matriculados</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($alunosMatriculados as $aluno): ?>
-                        <tr>
-                            <td><?= $aluno['id'] ?></td>
-                            <td><?= $aluno['nome'] ?></td>
-                            <td>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="aluno_id" value="<?= $aluno['id'] ?>">
-                                    <button type="submit" name="desmatricular">Desmatricular</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-
-            <p>
-                <a href="update-turma.php?id=<?= $turma['id'] ?>">Editar</a>
-                <a href="delete-turma.php?id=<?= $turma['id'] ?>">Excluir</a>
-            </p>
-        <?php else: ?>
-            <p>Turma não encontrada.</p>
-        <?php endif; ?>
+        <p>
+            <a href="update-consulta.php?chave=<?= $chave ?>">Editar</a>
+            <a href="delete-consulta.php?chave=<?= $_GET['chave'] ?>">Excluir</a>
+        </p>
     </main>
 </body>
 

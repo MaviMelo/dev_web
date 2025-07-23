@@ -16,6 +16,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = $_POST['nome'];
     $especialidade = $_POST['especialidade'];
+    $crm = $_POST['crm'];
     $usuario_id = $_POST['usuario_id'];
 
     // Atualiza o medico no banco de dados

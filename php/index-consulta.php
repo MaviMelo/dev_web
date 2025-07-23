@@ -9,11 +9,13 @@ $stmt = $pdo->query(
         medico.nome AS medico_nome,
         paciente.nome AS paciente_nome
     FROM 
-        medico_paciente
+        medico_paciente 
     JOIN
         medico ON medico_paciente.medico_id = medico.id
     JOIN
-        paciente ON medico_paciente.paciente_id = paciente.id"
+        paciente ON medico_paciente.paciente_id = paciente.id
+    ORDER BY
+            medico_paciente.data_hora ASC;"
 );
 $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -76,13 +78,13 @@ $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         $consulta['data_hora'];
                     ?>
                     <tr>
-                        <td><?= $consulta['medico_nome'] ?></td>
-                        <td><?= $consulta['paciente_nome'] ?></td>
-                        <td><?= $consulta['data_hora'] ?></td>
-                        <td><?= $consulta['observacao'] ?></td>
+                        <td><?= htmlspecialchars($consulta['medico_nome']) ?></td>
+                        <td><?= htmlspecialchars($consulta['paciente_nome']) ?></td>
+                        <td><?= htmlspecialchars($consulta['data_hora']) ?></td>
+                        <td><?= htmlspecialchars($consulta['observacao']) ?></td>
                         <td>
                             <!-- 2. USAR A CHAVE COMPOSTA NOS LINKS -->
-                            <!-- Usamos urlencode() para garantir que a chave seja segura para a URL -->
+                            <!-- Usar urlencode() para garantir que a chave seja segura para a URL -->
                             <a href="read-consulta.php?chave=<?= urlencode($chaveComposta) ?>">Visualizar</a>
                             <a href="update-consulta.php?chave=<?= urlencode($chaveComposta) ?>">Editar</a>
                             <a href="delete-consulta.php?chave=<?= urlencode($chaveComposta) ?>"
