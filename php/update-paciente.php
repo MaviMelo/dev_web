@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = $_POST['nome'];
     $tipoSanguineo = $_POST['tipoSanguineo'];
     $dataNascimento = $_POST['dataNascimento'];
-    // $email = $_POST['email'];
     $usuario_id = $_POST['usuario_id'];
 
     // Atualiza o paciente no banco de dados
@@ -75,10 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label for="dataNascimento">Data de Nascimento:</label>
             <input type="date" id="dataNascimento" name="dataNascimento" value="<?= $paciente['data_nascimento'] ?>" required>
-            <!--  
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" value="<?= $paciente['email'] ?>" required>
-            -->
             <label for="usuario_id">Usuário:</label>
             <select id="usuario_id" name="usuario_id" required>
                 <option value="">Selecione o usuário</option>

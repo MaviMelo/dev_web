@@ -2,7 +2,6 @@
 require_once 'db.php';
 require_once 'authenticate.php';
 
-$id = $_GET['id'];
 
 // Seleciona a consulta específica para o dropdown no formulário.
 $stmt = $pdo->query(
